@@ -1,9 +1,25 @@
 from os import error
 import sys
 def find_most_active(argv):
+    # currently only accepts one flag, so a specific argv is required
     if (len(argv) != 4):
         print("Usage: py most-active-cookie.py [file] -d [date]")
         return
+
+	# processing flags
+    i = 2
+    dateflag=False
+    date = ''
+    while (i< len(argv)):
+        print(i)
+        if (argv[i][0]!= '-'):
+            i+=1
+            continue
+        if ("d" in argv[i]):
+            dateflag = True
+            date = argv[i+1]
+        i+=1
+
 
 
     # parse csv file
@@ -14,18 +30,18 @@ def find_most_active(argv):
     next(fp)
     lines = fp.readlines()
     instance_counter = {}
-    for line in lines:
-        arguments = line.split(",")
-        # print(arguments)
-        if (len(arguments) != 2):
-            raise(error)
-            return []
-        time_arguments = arguments[1].split("T")
-        if (time_arguments[0] == argv[3]):
-            if arguments[0] not in instance_counter:
-                instance_counter[arguments[0]] = 1
-            else:
-                instance_counter[arguments[0]] += 1
+    if dateflag:
+        for line in lines:
+            arguments = line.split(",")
+            # print(arguments)
+            if (len(arguments) != 2):
+                raise(error)
+            time_arguments = arguments[1].split("T")
+            if (time_arguments[0] == date):
+                if arguments[0] not in instance_counter:
+                    instance_counter[arguments[0]] = 1
+                else:
+                    instance_counter[arguments[0]] += 1
 
     # execute on information stored in instance_counter
     most_active_cookies = []
