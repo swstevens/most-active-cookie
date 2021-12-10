@@ -1,28 +1,27 @@
 from os import error
 import sys
+import datetime
 def find_most_active(argv):
-    # currently only accepts one flag, so a specific argv is required
-    if (len(argv) != 4):
-        print("Usage: py most-active-cookie.py [file] -d [date]")
-        return
-
 	# processing flags
     i = 2
     dateflag=False
     date = ''
     while (i< len(argv)):
-        print(i)
         if (argv[i][0]!= '-'):
             i+=1
             continue
         if ("d" in argv[i]):
             dateflag = True
-            date = argv[i+1]
+            try: 
+                date = datetime.date.fromisoformat(argv[i+1])
+            except:
+                print("Usage: ./most_active_cookie [File] -d [Date]")
+                raise(error)
         i+=1
 
 
 
-    # parse csv file
+    # parse csv file based on flags from argv
     try:
         fp = open(argv[1], "r")
     except:
@@ -35,9 +34,12 @@ def find_most_active(argv):
             arguments = line.split(",")
             # print(arguments)
             if (len(arguments) != 2):
+                fp.close()
                 raise(error)
-            time_arguments = arguments[1].split("T")
-            if (time_arguments[0] == date):
+            #TODO incoroporate UTC datetime for check
+            arguments[1] = arguments[1].rstrip("\n")
+            cookie_time = datetime.datetime.fromisoformat(arguments[1])
+            if (cookie_time.date() == date):
                 if arguments[0] not in instance_counter:
                     instance_counter[arguments[0]] = 1
                 else:
@@ -45,12 +47,12 @@ def find_most_active(argv):
 
     # execute on information stored in instance_counter
     most_active_cookies = []
-    cookie_count_max = 0
+    max_cookie_count = 0
     for key in instance_counter:
-        if instance_counter[key] > cookie_count_max:
-            cookie_count_max = instance_counter[key]
+        if instance_counter[key] > max_cookie_count:
+            max_cookie_count = instance_counter[key]
             most_active_cookies = [key]
-        elif instance_counter[key] == cookie_count_max:
+        elif instance_counter[key] == max_cookie_count:
             most_active_cookies.append(key)
 
     [print(item) for item in most_active_cookies]
