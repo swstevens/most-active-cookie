@@ -60,7 +60,7 @@ def find_most_active(argv):
     return most_active_cookies
 
 def main():
-    print(sys.argv)
+    # print(sys.argv)
     find_most_active(sys.argv)
     return
 
